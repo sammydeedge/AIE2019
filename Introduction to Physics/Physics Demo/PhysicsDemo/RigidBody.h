@@ -7,8 +7,8 @@ public:
 	RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass);
 	~RigidBody();
 
-	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
-	virtual void debug();
+	void fixedUpdate(glm::vec2 gravity, float timeStep);
+	virtual void debug() = 0;
 	void applyForce(glm::vec2 force);
 	void applyForcetoActor(RigidBody* actor2, glm::vec2 force);
 

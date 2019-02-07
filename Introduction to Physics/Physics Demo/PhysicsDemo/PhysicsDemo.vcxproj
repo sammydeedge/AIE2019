@@ -136,6 +136,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,9 +165,17 @@
   <ItemGroup>
     <ClCompile Include="PhysicsDemoApp.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PhysicsObject.cpp" />
+    <ClCompile Include="PhysicsScene.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
+    <ClCompile Include="Sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PhysicsDemoApp.h" />
+    <ClInclude Include="PhysicsObject.h" />
+    <ClInclude Include="PhysicsScene.h" />
+    <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="Sphere.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
