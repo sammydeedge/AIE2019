@@ -7,6 +7,7 @@ RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, 
 	m_velocity = velocity;
 	m_rotation = rotation;
 	m_mass = mass;
+
 };
 
 RigidBody::~RigidBody()
@@ -25,8 +26,9 @@ void RigidBody::applyForce(glm::vec2 force)
 	m_velocity += force / m_mass;
 }
 
-void RigidBody::applyForcetoActor(RigidBody * actor2, glm::vec2 force)
+void RigidBody::applyForcetoActor(RigidBody* actor2, glm::vec2 force)
 {
 	actor2->applyForce(force);
-	applyForce(-force);
+	applyForce(force * -2.f);
 }
+

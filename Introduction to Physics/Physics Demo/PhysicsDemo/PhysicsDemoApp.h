@@ -24,5 +24,6 @@ protected:
 	PhysicsScene*		m_physicsScene;
 	Sphere*				ball1;
 	Sphere*				ball2;
+	Plane*				plane1;
 
 };

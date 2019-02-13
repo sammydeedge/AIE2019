@@ -1,5 +1,6 @@
 #include "PhysicsScene.h"
 
+
 PhysicsScene::PhysicsScene()
 {
 	m_gravity = glm::vec2(0, 0);
@@ -53,14 +54,18 @@ void PhysicsScene::update(float dt)
 				continue;
 			if (std::find(dirty.begin(), dirty.end(), pActor) != dirty.end() && std::find(dirty.begin(), dirty.end(), pOther) != dirty.end())
 				continue;
-
-			RigidBody* pRigid = dynamic_cast<RigidBody*>(pActor);
-			if (pRigid->checkCollision(pOther))
+			ShapeType ID = pActor->getShape();
+			if (ID == ShapeType::SPHERE || ID == ShapeType::BOX)
 			{
-				pRigid->applyForcetoActor(dynamic_cast<RigidBody*>(pOther), pRigid->getVelocity() * pRigid->getMass());
-				dirty.push_back(pRigid);
-				dirty.push_back(pOther);
+				RigidBody* pRigid = dynamic_cast<RigidBody*>(pActor);
+				if (pRigid->checkCollision(pOther) && pOther ->getShape() != PLANE)
+				{
+					pRigid->applyForcetoActor(dynamic_cast<RigidBody*>(pOther), pRigid->getVelocity() * pRigid->getMass());
+					dirty.push_back(pRigid);
+					dirty.push_back(pOther);
+				}
 			}
+
 		}
 	}
 	dirty.clear();

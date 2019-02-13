@@ -1,5 +1,7 @@
 #pragma once
 #include <glm\ext.hpp>
+#include <array>
+#include <Gizmos.h>
 
 enum ShapeType {
 	PLANE,
@@ -17,6 +19,8 @@ public:
 	virtual void debug() = 0;
 	virtual void makeGizmo() = 0;
 	virtual void resetPosition() {};
+
+	ShapeType getShape();
 
 protected:
 	ShapeType m_shapeID;

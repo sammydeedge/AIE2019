@@ -26,14 +26,17 @@ bool PhysicsDemoApp::startup() {
 	m_physicsScene->setGravity(glm::vec2(0, 0));
 	m_physicsScene->setTimeStep(0.01f);
 
-	ball1 = new Sphere(glm::vec2(-20, 0), glm::vec2(0, 0), 4.0f, 4, glm::vec4(1, 0, 0, 1));
-	ball2 = new Sphere(glm::vec2(-100, 0), glm::vec2(0, 0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
+	ball1 = new Sphere(glm::vec2(20, 0), glm::vec2(0, 0), 0, 1.0f, 2, glm::vec4(1, 0, 0, 1));
+	ball2 = new Sphere(glm::vec2(-20, 0), glm::vec2(0, 0), 0, 1.0f, 2, glm::vec4(0, 1, 0, 1));
+	
+	plane1 = new Plane(glm::vec2(1.f, 3.f), 10.f, glm::vec4 (1,1,1,1));
 
 	m_physicsScene->addActor(ball1);
 	m_physicsScene->addActor(ball2);
+	m_physicsScene->addActor(plane1);
 
-	ball1->applyForce(glm::vec2(300, 0));
-	ball2->applyForce(glm::vec2(-150, 0));
+	ball1->applyForce(glm::vec2(-10,0));
+	ball2->applyForce(glm::vec2(0,0));
 
 	return true;
 }
