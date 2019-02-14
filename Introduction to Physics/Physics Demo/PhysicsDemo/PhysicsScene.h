@@ -3,6 +3,8 @@
 #include <vector>
 #include "Sphere.h"
 #include "Plane.h"
+#include "AABB.h"
+#include "PhysicsObject.h"
 #include <algorithm>
 #include <list>
 #include <iostream>
@@ -27,6 +29,19 @@ public:
 	float getTimeStep() const { return m_timeStep; }
 
 	void debugScene();
+
+	void checkForCollision();
+
+	static bool plane_plane(PhysicsObject*, PhysicsObject*);
+	static bool plane_sphere(PhysicsObject*, PhysicsObject*);
+	static bool plane_box(PhysicsObject*, PhysicsObject*);
+	static bool sphere_plane(PhysicsObject*, PhysicsObject*);
+	static bool sphere_sphere(PhysicsObject*, PhysicsObject*);
+	static bool sphere_box(PhysicsObject*, PhysicsObject*);
+	static bool box_plane(PhysicsObject*, PhysicsObject*);
+	static bool box_sphere(PhysicsObject*, PhysicsObject*);
+	static bool box_box(PhysicsObject*, PhysicsObject*);
+
 
 protected:
 	glm::vec2 m_gravity;

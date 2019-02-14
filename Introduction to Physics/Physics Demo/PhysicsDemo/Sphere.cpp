@@ -18,19 +18,19 @@ void Sphere::makeGizmo()
 
 bool Sphere::checkCollision(PhysicsObject* pOther)
 {
-	Sphere* otherBall = (Sphere*)pOther;
+	//Sphere* otherBall = (Sphere*)pOther;
 
-	float radiiSize = m_radius + otherBall->getRadius();
+	//float radiiSize = m_radius + otherBall->getRadius();
 
-	if (otherBall != nullptr)
-	{
-		float distance = glm::distance(m_position, otherBall->getPosition());
-		return radiiSize > distance;
-	}
-	else
-	{
+	//if (otherBall != nullptr)
+	//{
+	//	float distance = glm::distance(m_position, otherBall->getPosition());
+	//	return radiiSize > distance;
+	//}
+	//else
+	//{
 		return false;
-	}
+	//}
 
 }
 

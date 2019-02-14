@@ -25,5 +25,8 @@ protected:
 	Sphere*				ball1;
 	Sphere*				ball2;
 	Plane*				plane1;
+	Plane*				plane2;
+	Plane*				plane3;
+	AABB*				box1;
 
 };

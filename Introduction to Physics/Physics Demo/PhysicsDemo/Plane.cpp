@@ -2,7 +2,7 @@
 
 Plane::Plane(glm::vec2 normal, float displacement, glm::vec4 colour) : PhysicsObject(PLANE)
 {
-	m_normal = normal;
+	m_normal = glm::normalize(normal);
 	m_displacement = displacement;
 	m_colour = colour;
 }

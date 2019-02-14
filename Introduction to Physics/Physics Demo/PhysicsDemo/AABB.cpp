@@ -6,6 +6,7 @@ AABB::AABB(glm::vec2 position, glm::vec2 velocity, float rotation, float mass, g
 	m_height = height;
 	m_min_corner = glm::vec2(position.x - (width / 2.f), position.y - (height / 2.f));
 	m_max_corner = glm::vec2(position.x + (width / 2.f), position.y + (height / 2.f));
+	m_colour = colour;
 }
 
 AABB::~AABB()

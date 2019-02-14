@@ -19,6 +19,8 @@ public:
 	glm::vec2 getVelocity()	{ return m_velocity; }
 	float getMass()			{ return m_mass; }
 
+	void setVelocity(glm::vec2 vel) { m_velocity = vel; }
+
 	void setColour(glm::vec4 colour) { m_colour = colour; }
 
 

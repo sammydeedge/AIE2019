@@ -10,7 +10,11 @@ public:
 	void makeGizmo();
 	void resetPosition() {};
 
+	glm::vec2 getNormal() { return m_normal; }
+	float getDisplacement() { return m_displacement; }
+
 	void fixedUpdate(glm::vec2 gravity, float timeStep);
+	
 
 protected:
 	glm::vec2	m_normal;
