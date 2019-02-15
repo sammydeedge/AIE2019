@@ -141,8 +141,46 @@ bool PhysicsScene::plane_sphere(PhysicsObject *, PhysicsObject *)
 	return false;
 }
 
-bool PhysicsScene::plane_box(PhysicsObject *, PhysicsObject *)
+bool PhysicsScene::plane_box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
+	Plane* plane = dynamic_cast<Plane*>(obj1);
+	AABB* box = dynamic_cast<AABB*>(obj2);
+	
+
+	bool isInFront = false;
+	bool isBehind = false;
+
+	box->updateCorners();
+
+	glm::vec2 box_min = box->getMinCorner();
+	glm::vec2 box_max = box->getMaxCorner();
+	glm::vec2 box_cnt = box->getPosition();
+
+	glm::vec2 corners[4] = { glm::vec2(box_min.x, box_max.y), box_max, box_min, glm::vec2(box_max.x, box_min.y) };
+
+	for (auto corner : corners)
+	{
+
+		float displace = plane->distanceTo(corner);
+		if (displace < 0)
+		{
+			isBehind = true;
+		}
+		else if (displace >= 0)
+		{
+			isInFront = true;
+		}
+		//else ///if displace is 0, therefore is "touching"
+		//{
+		//	return true;
+		//}
+	}
+	if (isBehind && isInFront)
+	{
+		box->setVelocity(glm::vec2(0, 0));
+		return true;
+	}
+
 	return false;
 }
 
@@ -154,7 +192,7 @@ bool PhysicsScene::sphere_plane(PhysicsObject* obj1, PhysicsObject* obj2)
 	if (sphere != nullptr && plane != nullptr)
 	{
 		glm::vec2 collisionNormal = plane->getNormal();
-		float sphereToPlane = glm::dot(sphere->getPosition(), collisionNormal) - plane->getDisplacement();
+		float sphereToPlane = plane->distanceTo(sphere->getPosition());
 		if (sphereToPlane < 0)
 		{
 			collisionNormal *= -1;
@@ -183,20 +221,41 @@ bool PhysicsScene::sphere_sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 		float distance = glm::distance(sphere1->getPosition(), sphere2->getPosition());
 		if (radiiSize > distance)
 		{
-			sphere1->setVelocity(glm::vec2(0, 0));
-			sphere2->setVelocity(glm::vec2(0, 0));
+			sphere1->resolveCollision(sphere2);
 			return true;
 		}
 	}
 	return false;
 }
 
-bool PhysicsScene::sphere_box(PhysicsObject *, PhysicsObject *)
+bool PhysicsScene::sphere_box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
+	Sphere* sphere = dynamic_cast<Sphere*>(obj1);
+	AABB* box = dynamic_cast<AABB*>(obj2);
+
+	glm::vec2 sphr_centre	= sphere->getPosition();
+	glm::vec2 box_min		= box->getMinCorner();
+	glm::vec2 box_max		= box->getMaxCorner();
+
+
+	glm::vec2 closest = glm::clamp(sphr_centre, box_min, box_max);
+
+	glm::vec2 lineToSphere = closest - sphr_centre;
+
+	float distance = glm::length(lineToSphere);
+	float sphr_radius = sphere->getRadius();
+
+	if (distance < sphr_radius)
+	{
+		sphere->setVelocity(glm::vec2(0, 0));
+		box->setVelocity(glm::vec2(0, 0));
+		return true;
+	}
+
 	return false;
 }
 
-bool PhysicsScene::box_plane(PhysicsObject *, PhysicsObject *)
+bool PhysicsScene::box_plane(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	return false;
 }
@@ -206,9 +265,16 @@ bool PhysicsScene::box_sphere(PhysicsObject *, PhysicsObject *)
 	return false;
 }
 
-bool PhysicsScene::box_box(PhysicsObject *, PhysicsObject *)
+bool PhysicsScene::box_box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
-	return false;
+	AABB* box1 = dynamic_cast<AABB*>(obj1);
+	AABB* box2 = dynamic_cast<AABB*>(obj2);
+
+	if		(box1->getMaxCorner().x > box2->getMinCorner().x) { return false; }
+	else if (box2->getMaxCorner().x > box1->getMinCorner().x) { return false; }
+	else if (box1->getMaxCorner().y > box2->getMinCorner().y) { return false; }
+	else if (box2->getMaxCorner().y > box2->getMinCorner().y) { return false; }
+	else	{ return true; }
 }
 
 

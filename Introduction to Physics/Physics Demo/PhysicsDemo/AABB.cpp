@@ -1,6 +1,6 @@
 #include "AABB.h"
 
-AABB::AABB(glm::vec2 position, glm::vec2 velocity, float rotation, float mass, glm::vec4 colour, float width, float height) : RigidBody(BOX, position, velocity, rotation, mass)
+AABB::AABB(glm::vec2 position, glm::vec2 velocity, float rotation, float mass, glm::vec4 colour, float width, float height, float elasticity) : RigidBody(BOX, position, velocity, rotation, mass, elasticity)
 {
 	m_width = width;
 	m_height = height;
@@ -32,12 +32,8 @@ void AABB::updateCorners()
 
 bool AABB::checkCollision(PhysicsObject * pOther)
 {
-	AABB* otherBox = (AABB*)pOther;
+	//AABB* otherBox = (AABB*)pOther;
 
-	if (m_max_corner.x					> otherBox->m_min_corner.x)			{ return false; }
-	else if (otherBox->m_max_corner.x	> m_min_corner.x)					{ return false; }
-	else if (m_max_corner.y				> otherBox->m_min_corner.y)			{ return false; }
-	else if (otherBox->m_max_corner.y	> m_min_corner.y)					{ return false; }
-	else	{ return true; }
+	return false;
 }
 

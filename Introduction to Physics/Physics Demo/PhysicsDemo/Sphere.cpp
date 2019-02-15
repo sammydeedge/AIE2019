@@ -1,6 +1,6 @@
 #include "Sphere.h"
 
-Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float radius, glm::vec4 colour) : RigidBody(SPHERE, position, velocity, rotation, mass)
+Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float radius, glm::vec4 colour, float elasticity) : RigidBody(SPHERE, position, velocity, rotation, mass, elasticity)
 {
 	m_radius = radius;
 	m_colour = colour;

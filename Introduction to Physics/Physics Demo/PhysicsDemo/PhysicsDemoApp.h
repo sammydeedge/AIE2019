@@ -22,11 +22,16 @@ protected:
 	aie::Renderer2D*	m_2dRenderer;
 	aie::Font*			m_font;
 	PhysicsScene*		m_physicsScene;
+
 	Sphere*				ball1;
 	Sphere*				ball2;
+	Sphere*				ball3;
+	Sphere*				ball4;
+
 	Plane*				plane1;
 	Plane*				plane2;
 	Plane*				plane3;
+
 	AABB*				box1;
 
 };

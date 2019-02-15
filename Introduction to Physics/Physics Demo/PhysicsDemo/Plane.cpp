@@ -23,6 +23,13 @@ void Plane::makeGizmo()
 	aie::Gizmos::add2DLine(renderStart, renderEnd, m_colour);
 }
 
+float Plane::distanceTo(const glm::vec2 point) const
+{
+	return glm::dot(m_normal, point) + m_displacement;
+}
+
 void Plane::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
 }
+
+
