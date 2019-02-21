@@ -1,4 +1,5 @@
 #include "PhysicsScene.h"
+#include <random>
 
 
 PhysicsScene::PhysicsScene()
@@ -202,7 +203,10 @@ bool PhysicsScene::sphere_plane(PhysicsObject* obj1, PhysicsObject* obj2)
 		float intersection = sphere->getRadius() - sphereToPlane;
 		if (intersection > 0)
 		{
-			sphere->setVelocity(glm::vec2(0, 0));
+			sphere->randomColour();
+			plane->randomColour();
+			glm::vec2 contactPos = sphere->getPosition() + (collisionNormal * -sphere->getRadius());
+			plane->resolveCollision(sphere, contactPos);
 			return true;
 		}
 	}
@@ -221,7 +225,12 @@ bool PhysicsScene::sphere_sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 		float distance = glm::distance(sphere1->getPosition(), sphere2->getPosition());
 		if (radiiSize > distance)
 		{
-			sphere1->resolveCollision(sphere2);
+			float overlap = radiiSize - distance;
+			glm::vec2 centreDisplace = glm::normalize(sphere1->getPosition() - sphere2->getPosition());
+			sphere1->translate(centreDisplace * overlap * 0.5f);
+			sphere1->randomColour();
+			sphere2->randomColour();
+			sphere1->resolveCollision(sphere2, 0.5f *(sphere1->getPosition() + sphere2->getPosition()));
 			return true;
 		}
 	}

@@ -23,38 +23,33 @@ bool PhysicsDemoApp::startup() {
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
 
 	m_physicsScene = new PhysicsScene();
-	m_physicsScene->setGravity(glm::vec2(0, 0));
+	m_physicsScene->setGravity(glm::vec2(0, -8.5f));
 	m_physicsScene->setTimeStep(0.01f);
 
-	ball1 = new Sphere(glm::vec2(2, 0),		glm::vec2(0, 0),	 0, 1.0f, 2, glm::vec4(1, 0, 0, 1), 1.f);
-	ball2 = new Sphere(glm::vec2(-17, 0),	glm::vec2(0, 0),	 0, 1.0f, 2, glm::vec4(0, 1, 0, 1), 1.f);
-	ball3 = new Sphere(glm::vec2(3, 12),	glm::vec2(0, 0),	 0, 1.0f, 2, glm::vec4(1, 0, 0, 1), 1.f);
-	ball4 = new Sphere(glm::vec2(-4, -10),	glm::vec2(0, 0),	 0, 1.0f, 2, glm::vec4(0, 1, 0, 1), 1.f);
+	ball1 = new Sphere(glm::vec2(28, -0.2f),	glm::vec2(0, 0),	 0, 1.0f, 2, glm::vec4(1, 0, 0, 1), 1.f);
+	ball2 = new Sphere(glm::vec2(17, 0),		glm::vec2(0, 0),	 0, 1.0f, 2, glm::vec4(0, 1, 1, 1), 1.f);
+	ball3 = new Sphere(glm::vec2(30, 12),		glm::vec2(0, 0),	 0, 1.0f, 2, glm::vec4(1, 1, 0, 1), 1.f);
+	ball4 = new Sphere(glm::vec2(49, -10),		glm::vec2(0, 0),	 0, 1.0f, 2, glm::vec4(0, 0, 1, 1), 1.f);
 	
-	plane1 = new Plane(glm::vec2(1.f, 6.f), 25.f, glm::vec4 (1,0,1,1));
-	plane2 = new Plane(glm::vec2(1.f, 6.f), -25.f, glm::vec4(1, 1, 0, 1));
-	//plane3 = new Plane(glm::vec2(1.f, 6.f), 0.f, glm::vec4(0, 1, 1, 1));
+	plane1 = new Plane(glm::vec2(-1.f, -6.f),	-20.f, glm::vec4 (1,0,1,1));
+	plane2 = new Plane(glm::vec2(1.f, 6.f),		-25.f, glm::vec4(1, 1, 0, 1));
+	plane3 = new Plane(glm::vec2(-1.f, -0.1f),	-20.f, glm::vec4(0, 1, 1, 1));
 
 	box1 = new AABB(glm::vec2(20, 0), glm::vec2(0, 0), 0, 1.f, glm::vec4(1, 1, 1,1),10.f, 10.f, 1.f);
 
 
 	m_physicsScene->addActor(ball1);
 	m_physicsScene->addActor(ball2);
-	//m_physicsScene->addActor(ball3);
-	//m_physicsScene->addActor(ball4);
+	m_physicsScene->addActor(ball3);
+	m_physicsScene->addActor(ball4);
 
-	//m_physicsScene->addActor(plane1);
-	//m_physicsScene->addActor(plane2);
+	m_physicsScene->addActor(plane1);
+	m_physicsScene->addActor(plane2);
 
 	//m_physicsScene->addActor(box1);
-	//m_physicsScene->addActor(plane3);
+	/*m_physicsScene->addActor(plane3);*/
 
-	ball1->applyForce(glm::vec2(-15, 0));
-	ball2->applyForce(glm::vec2(15,0));
-	ball3->applyForce(glm::vec2(-2, -20));
-	ball4->applyForce(glm::vec2(2, -20));
-
-	box1->applyForce(glm::vec2(-5, -12));
+	ball1->setVelocity(glm::vec2(-70.f, 1.f));
 
 	return true;
 }
@@ -69,6 +64,11 @@ void PhysicsDemoApp::update(float deltaTime) {
 
 	// input example
 	aie::Input* input = aie::Input::getInstance();
+
+	/*if (input->isMouseButtonDown)
+	{
+		input->getMouseXY();
+	}*/
 
 	aie::Gizmos::clear();
 
