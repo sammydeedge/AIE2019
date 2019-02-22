@@ -1,7 +1,7 @@
 #include "RigidBody.h"
 #include <random>
-#define MIN_LINEAR_THRESHOLD 0.1
-#define MIN_ROTATION_THRESHOLD 0.01
+#define MIN_LINEAR_THRESHOLD 0.01
+#define MIN_ROTATION_THRESHOLD 0.001
 
 RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float elasticity) : PhysicsObject(shapeID)
 {
@@ -11,9 +11,10 @@ RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, 
 	m_rotation = rotation;
 	m_mass = mass;
 	m_elasticity = elasticity;
-	m_linearDrag = 0.3f;
-	m_angularDrag = 0.3f;
+	m_linearDrag = 0.2f;
+	m_angularDrag = 0.2f;
 	m_rotation = 0;
+	m_angularVelocity = 0;
 };
 
 RigidBody::~RigidBody()
@@ -80,6 +81,11 @@ void RigidBody::resolveCollision(RigidBody * actor2, glm::vec2 contactPos, glm::
 	}
 
 
+}
+
+float RigidBody::getKineticEnergy()
+{
+	return 0.5f * (m_mass * glm::dot(m_velocity, m_velocity) + m_moment * m_angularVelocity * m_angularVelocity);
 }
 
 void RigidBody::randomColour()

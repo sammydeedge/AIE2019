@@ -126,7 +126,18 @@ void PhysicsScene::checkForCollision()
 
 			if (collisionFunctionPtr != nullptr)
 			{
+				float kePre = object1->getKineticEnergy() + object2->getKineticEnergy();
+
 				collisionFunctionPtr(object1, object2);
+
+				float kePost = object1->getKineticEnergy() + object2->getKineticEnergy();
+
+				float deltaKe = kePost - kePre;
+
+				if (abs(deltaKe > 0.01f))
+				{
+					std::cout << "Kinetic Energy fluctuation detected" << std::endl;
+				}
 			}
 		}
 	}
@@ -145,43 +156,67 @@ bool PhysicsScene::plane_sphere(PhysicsObject *, PhysicsObject *)
 bool PhysicsScene::plane_box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	Plane* plane = dynamic_cast<Plane*>(obj1);
-	AABB* box = dynamic_cast<AABB*>(obj2);
-	
+	Box* box = dynamic_cast<Box*>(obj2);
 
-	bool isInFront = false;
-	bool isBehind = false;
-
-	box->updateCorners();
-
-	glm::vec2 box_min = box->getMinCorner();
-	glm::vec2 box_max = box->getMaxCorner();
-	glm::vec2 box_cnt = box->getPosition();
-
-	glm::vec2 corners[4] = { glm::vec2(box_min.x, box_max.y), box_max, box_min, glm::vec2(box_max.x, box_min.y) };
-
-	for (auto corner : corners)
+	if (box != nullptr && plane != nullptr)
 	{
+		int numContacts = 0;
+		glm::vec2 contact(0, 0);
+		float contactV = 0;
+		float radius = 0.5f * std::fminf(box->getWidth(), box->getHeight());
+		float penetration = 0.f;
 
-		float displace = plane->distanceTo(corner);
-		if (displace < 0)
-		{
-			isBehind = true;
-		}
-		else if (displace >= 0)
-		{
-			isInFront = true;
-		}
-		//else ///if displace is 0, therefore is "touching"
-		//{
-		//	return true;
-		//}
-	}
-	if (isBehind && isInFront)
-	{
-		box->setVelocity(glm::vec2(0, 0));
-		return true;
-	}
+		glm::vec2 planeOrigin = plane->getNormal() * plane->getDisplacement();
+		float comFromPlane = glm::dot(box->getPosition() - planeOrigin, plane->getNormal());
 
+		for (float x = -box->getExtents().x; x < box->getWidth(); x += box->getWidth())
+		{
+			for (float y = -box->getExtents().y; y < box->getHeight(); y += box->getHeight())
+			{
+				glm::vec2 p = box->getPosition() + x * box->getLocalX() + y * box->getLocalY();
+
+				float distFromPlane = glm::dot(p - planeOrigin, plane->getNormal());
+
+
+				float velocityIntoPlane = glm::dot(box->getVelocity() + box->getAngularVelocity() * (-y * box->getLocalX() + x * box->getLocalY()), plane->getNormal());
+
+				if ((distFromPlane > 0 && comFromPlane < 0 && velocityIntoPlane > 0) || (distFromPlane < 0 && comFromPlane > 0 && velocityIntoPlane < 0))
+				{
+					numContacts++;
+					contact += p;
+					contactV += velocityIntoPlane;
+
+					if (comFromPlane >= 0)
+					{
+						if (penetration > distFromPlane)
+						{
+							penetration = distFromPlane;
+						}
+					}
+					else
+					{
+						if (penetration < distFromPlane)
+						{
+							penetration = distFromPlane;
+						}
+					}
+				}
+
+			}
+		}
+
+		if (numContacts > 0)
+		{
+			float collisionV = contactV / (float)numContacts;
+			glm::vec2 acceleration = -plane->getNormal() * ((1.f + box->getElasticity()) * collisionV);
+			glm::vec2 localContact = (contact / (float)numContacts) - box->getPosition();
+			float r = glm::dot(localContact, glm::vec2(plane->getNormal().y, -plane->getNormal().x));
+			float mass0 = 1.f / (1.f / box->getMass() + (r*r) / box->getMoment());
+			box->applyForce(acceleration * mass0, localContact);
+
+			box->setPosition(box->getPosition() - plane->getNormal() * penetration);
+		}
+	}
 	return false;
 }
 
@@ -206,6 +241,7 @@ bool PhysicsScene::sphere_plane(PhysicsObject* obj1, PhysicsObject* obj2)
 			sphere->randomColour();
 			plane->randomColour();
 			glm::vec2 contactPos = sphere->getPosition() + (collisionNormal * -sphere->getRadius());
+			sphere->setPosition(sphere->getPosition() + plane->getNormal() * (sphere->getRadius() - sphereToPlane));
 			plane->resolveCollision(sphere, contactPos);
 			return true;
 		}
@@ -222,12 +258,14 @@ bool PhysicsScene::sphere_sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 	if (sphere1 != nullptr && sphere2 != nullptr)
 	{
 		float radiiSize = sphere1->getRadius() + sphere2->getRadius();
-		float distance = glm::distance(sphere1->getPosition(), sphere2->getPosition());
+		glm::vec2 delta = sphere2->getPosition() - sphere1->getPosition();
+		float distance = glm::length(delta);
 		if (radiiSize > distance)
 		{
-			float overlap = radiiSize - distance;
-			glm::vec2 centreDisplace = glm::normalize(sphere1->getPosition() - sphere2->getPosition());
-			sphere1->translate(centreDisplace * overlap * 0.5f);
+			glm::vec2 contactForce = 0.5f * (distance - (radiiSize))* delta / distance;
+			sphere1->setPosition(sphere1->getPosition() + contactForce);
+			sphere2->setPosition(sphere2->getPosition() - contactForce);
+
 			sphere1->randomColour();
 			sphere2->randomColour();
 			sphere1->resolveCollision(sphere2, 0.5f *(sphere1->getPosition() + sphere2->getPosition()));
@@ -240,25 +278,70 @@ bool PhysicsScene::sphere_sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 bool PhysicsScene::sphere_box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	Sphere* sphere = dynamic_cast<Sphere*>(obj1);
-	AABB* box = dynamic_cast<AABB*>(obj2);
+	Box* box = dynamic_cast<Box*>(obj2);
 
-	glm::vec2 sphr_centre	= sphere->getPosition();
-	glm::vec2 box_min		= box->getMinCorner();
-	glm::vec2 box_max		= box->getMaxCorner();
-
-
-	glm::vec2 closest = glm::clamp(sphr_centre, box_min, box_max);
-
-	glm::vec2 lineToSphere = closest - sphr_centre;
-
-	float distance = glm::length(lineToSphere);
-	float sphr_radius = sphere->getRadius();
-
-	if (distance < sphr_radius)
+	if (box != nullptr && sphere != nullptr)
 	{
-		sphere->setVelocity(glm::vec2(0, 0));
-		box->setVelocity(glm::vec2(0, 0));
-		return true;
+		glm::vec2 circlePos = sphere->getPosition() - box->getPosition();
+		float w2 = box->getWidth() / 2.f, h2 = box->getHeight() / 2.f;
+
+		int numContacts = 0;
+		glm::vec2 contact(0, 0);
+
+		for (float x = -w2; x <= w2; x += box->getWidth())
+		{
+			for (float y = -h2; y <= h2; y += box->getHeight())
+			{
+				glm::vec2 p = x * box->getLocalX() + y * box->getLocalY();
+				glm::vec2 dp = p - circlePos;
+				if (dp.x*dp.x + dp.y*dp.y < sphere->getRadius()*sphere->getRadius())
+				{
+					numContacts++;
+					contact += glm::vec2(x, y);
+				}
+			}
+		}
+		glm::vec2* direction = nullptr;
+		glm::vec2 localPos(glm::dot(box->getLocalX(), circlePos), glm::dot(box->getLocalY(), circlePos));
+		if (localPos.y < h2 && localPos.y > -h2)
+		{
+			if (localPos.x > 0 && localPos.x < w2 + sphere->getRadius())
+			{
+				numContacts++;
+				contact += glm::vec2(-w2, localPos.y);
+				direction = new glm::vec2(-box->getLocalX());
+			}
+			if (localPos.x < 0 && localPos.x > -(w2 + sphere->getRadius()))
+			{
+				numContacts++;
+				contact += glm::vec2(-w2, localPos.y);
+				direction = new glm::vec2(-box->getLocalX());
+			}
+		}
+		if (localPos.x < w2 && localPos.x > -w2)
+		{
+			if (localPos.y > 0 && localPos.y < h2 + sphere->getRadius())
+			{
+				numContacts++;
+				contact += glm::vec2(localPos.x, h2);
+				direction = new glm::vec2(box->getLocalY());
+			}
+			if (localPos.y < 0 && localPos.y < -(h2 + sphere->getRadius()))
+			{
+				numContacts++;
+				contact += glm::vec2(localPos.x, -h2);
+				direction = new glm::vec2(-box->getLocalY());
+			}
+
+		}
+
+		if (numContacts > 0)
+		{
+			contact = box->getPosition() + (1.f / numContacts) * (box->getLocalX() * contact.x + box->getLocalY() * contact.y);
+
+			box->resolveCollision(sphere, contact, direction);
+		}
+		delete direction;
 	}
 
 	return false;
@@ -276,14 +359,35 @@ bool PhysicsScene::box_sphere(PhysicsObject *, PhysicsObject *)
 
 bool PhysicsScene::box_box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
-	AABB* box1 = dynamic_cast<AABB*>(obj1);
-	AABB* box2 = dynamic_cast<AABB*>(obj2);
+	Box* box1 = dynamic_cast<Box*>(obj1);
+	Box* box2 = dynamic_cast<Box*>(obj2);
 
-	if		(box1->getMaxCorner().x > box2->getMinCorner().x) { return false; }
-	else if (box2->getMaxCorner().x > box1->getMinCorner().x) { return false; }
-	else if (box1->getMaxCorner().y > box2->getMinCorner().y) { return false; }
-	else if (box2->getMaxCorner().y > box2->getMinCorner().y) { return false; }
-	else	{ return true; }
+	if (box1 != nullptr && box2 != nullptr)
+	{
+		glm::vec2 boxPos = box2->getPosition() - box1->getPosition();
+		glm::vec2 normal;
+		glm::vec2 contactForce1, contactForce2;
+		glm::vec2 contact(0, 0);
+		float pen = 0;
+		int numContacts = 0;
+
+		box1->checkBoxCorners(*box2, contact, numContacts, normal, contactForce1);
+
+		if (box2->checkBoxCorners(*box1, contact, numContacts, normal, contactForce2))
+		{
+			normal = -normal;
+		}
+		if (numContacts > 0)
+		{
+			glm::vec2 contactForce = 0.5f * (contactForce1 - contactForce2);
+			box1->setPosition(box1->getPosition() - contactForce);
+			box2->setPosition(box1->getPosition() + contactForce);
+			
+			box1->resolveCollision(box2, contact / (float)numContacts, &normal);
+			return true;
+		}
+	}
+	return false;
 }
 
 

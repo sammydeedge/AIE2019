@@ -23,6 +23,8 @@ public:
 
 	void setColour(glm::vec4 colour) { m_colour = colour; }
 	void randomColour();
+
+	float getKineticEnergy();
 	
 
 protected:

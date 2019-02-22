@@ -15,15 +15,21 @@ public:
 
 	virtual bool checkCollision(PhysicsObject* pOther) = 0;
 
+	float getKineticEnergy();
+
 	void setVelocity(glm::vec2 vel) { m_velocity = vel; }
 	void translate(glm::vec2 pos) { m_position += pos; }
 
 
-	glm::vec2 getPosition() { return m_position; }
-	float getRotation()		{ return m_rotation; }
-	glm::vec2 getVelocity()	{ return m_velocity; }
-	float getMass()			{ return m_mass; }
-	float getElasticity()	{ return m_elasticity; }
+	glm::vec2 getPosition()			{ return m_position; }
+	float getRotation()				{ return m_rotation; }
+	glm::vec2 getVelocity()			{ return m_velocity; }
+	float getAngularVelocity()		{ return m_angularVelocity; }
+	float getMass()					{ return m_mass; }
+	float getElasticity()			{ return m_elasticity; }
+	float getMoment()				{ return m_moment; }
+
+	void setPosition(glm::vec2 pos) { m_position = pos; }
 
 
 

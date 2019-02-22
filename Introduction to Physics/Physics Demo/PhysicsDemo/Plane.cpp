@@ -25,7 +25,7 @@ void Plane::makeGizmo()
 
 float Plane::distanceTo(const glm::vec2 point) const
 {
-	return glm::dot(m_normal, point) + m_displacement;
+	return glm::dot(m_normal, point) - m_displacement;
 }
 
 void Plane::resolveCollision(RigidBody * actor2, glm::vec2 contactPos)
@@ -54,6 +54,11 @@ void Plane::randomColour()
 	float bVal = (rand() % 100) / 100.f;
 
 	setColour(glm::vec4(rVal, gVal, bVal, 1));
+}
+
+float Plane::getKineticEnergy()
+{
+	return 0.0f;
 }
 
 

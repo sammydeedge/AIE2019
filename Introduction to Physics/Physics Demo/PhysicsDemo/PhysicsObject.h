@@ -20,6 +20,8 @@ public:
 	virtual void makeGizmo() = 0;
 	virtual void resetPosition() {};
 
+	virtual float getKineticEnergy() = 0;
+
 	ShapeType getShape();
 
 protected:

@@ -32,6 +32,8 @@ protected:
 	Plane*				plane2;
 	Plane*				plane3;
 
-	AABB*				box1;
+	AABB*				aabb1;
+
+	Box*				box1;
 
 };
