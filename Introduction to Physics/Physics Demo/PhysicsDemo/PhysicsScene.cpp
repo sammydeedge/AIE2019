@@ -101,9 +101,10 @@ typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
 
 static fn collisionFunctionArray[] =
 {
-	PhysicsScene::plane_plane, PhysicsScene::plane_sphere, PhysicsScene::plane_box, 
-	PhysicsScene::sphere_plane, PhysicsScene::sphere_sphere, PhysicsScene::sphere_box,
-	PhysicsScene::box_plane, PhysicsScene::box_sphere, PhysicsScene::box_box
+	PhysicsScene::plane_plane,	PhysicsScene::plane_sphere,		PhysicsScene::plane_box,	PhysicsScene::plane_aabb,
+	PhysicsScene::sphere_plane, PhysicsScene::sphere_sphere,	PhysicsScene::sphere_box,	PhysicsScene::sphere_aabb,
+	PhysicsScene::box_plane,	PhysicsScene::box_sphere,		PhysicsScene::box_box,		PhysicsScene::box_aabb,
+	PhysicsScene::aabb_plane,	PhysicsScene::aabb_sphere,		PhysicsScene::aabb_box,		PhysicsScene::aabb_aabb
 };
 
 void PhysicsScene::checkForCollision()
@@ -119,7 +120,7 @@ void PhysicsScene::checkForCollision()
 			int shapeID1 = object1->getShape();
 			int shapeID2 = object2->getShape();
 
-			int SHAPE_COUNT = 3; ///number of elements in the SHAPE ID enum
+			int SHAPE_COUNT = 4; ///number of elements in the SHAPE ID enum
 			int functionID = ((shapeID1 * SHAPE_COUNT) + shapeID2);
 
 			fn collisionFunctionPtr = collisionFunctionArray[functionID];
@@ -220,6 +221,17 @@ bool PhysicsScene::plane_box(PhysicsObject* obj1, PhysicsObject* obj2)
 	return false;
 }
 
+bool PhysicsScene::plane_aabb(PhysicsObject* obj1, PhysicsObject* obj2)
+{
+	Plane* plane = dynamic_cast<Plane*>(obj1);
+	AABB* aabb = dynamic_cast<AABB*>(obj2);
+
+	//clamp value to corners
+
+
+	return false;
+}
+
 bool PhysicsScene::sphere_plane(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	Sphere *sphere = dynamic_cast<Sphere*>(obj1);
@@ -238,10 +250,10 @@ bool PhysicsScene::sphere_plane(PhysicsObject* obj1, PhysicsObject* obj2)
 		float intersection = sphere->getRadius() - sphereToPlane;
 		if (intersection > 0)
 		{
-			sphere->randomColour();
-			plane->randomColour();
+			/*sphere->randomColour();
+			plane->randomColour();*/
 			glm::vec2 contactPos = sphere->getPosition() + (collisionNormal * -sphere->getRadius());
-			sphere->setPosition(sphere->getPosition() + plane->getNormal() * (sphere->getRadius() - sphereToPlane));
+			sphere->setPosition(sphere->getPosition() + (plane->getNormal() * intersection));
 			plane->resolveCollision(sphere, contactPos);
 			return true;
 		}
@@ -347,6 +359,11 @@ bool PhysicsScene::sphere_box(PhysicsObject* obj1, PhysicsObject* obj2)
 	return false;
 }
 
+bool PhysicsScene::sphere_aabb(PhysicsObject *, PhysicsObject *)
+{
+	return false;
+}
+
 bool PhysicsScene::box_plane(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	return false;
@@ -389,5 +406,31 @@ bool PhysicsScene::box_box(PhysicsObject* obj1, PhysicsObject* obj2)
 	}
 	return false;
 }
+
+bool PhysicsScene::box_aabb(PhysicsObject *, PhysicsObject *)
+{
+	return false;
+}
+
+bool PhysicsScene::aabb_plane(PhysicsObject *, PhysicsObject *)
+{
+	return false;
+}
+
+bool PhysicsScene::aabb_sphere(PhysicsObject *, PhysicsObject *)
+{
+	return false;
+}
+
+bool PhysicsScene::aabb_box(PhysicsObject *, PhysicsObject *)
+{
+	return false;
+}
+
+bool PhysicsScene::aabb_aabb(PhysicsObject *, PhysicsObject *)
+{
+	return false;
+}
+
 
 

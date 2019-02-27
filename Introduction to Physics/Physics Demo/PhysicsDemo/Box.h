@@ -8,6 +8,10 @@ public:
 	void fixedUpdate(glm::vec2 gravity, float timeStep);
 	void makeGizmo();
 
+
+	void debug();
+	bool checkCollision(PhysicsObject* pOther);
+
 	bool checkBoxCorners(Box& box, glm::vec2 & contact, int & numContacts, glm::vec2 & edgeNormal, glm::vec2& contactForce);
 
 	glm::vec2 getExtents() { return m_extents; }

@@ -32,6 +32,15 @@ void Box::makeGizmo()
 	aie::Gizmos::add2DTri(p1, p4, p3, m_colour);
 }
 
+void Box::debug()
+{
+}
+
+bool Box::checkCollision(PhysicsObject * pOther)
+{
+	return false;
+}
+
 bool Box::checkBoxCorners(Box& box, glm::vec2 & contact, int & numContacts, glm::vec2 & edgeNormal, glm::vec2& contactForce)
 {
 	float minX, maxX, minY, maxY;

@@ -1,7 +1,7 @@
 #include "RigidBody.h"
 #include <random>
-#define MIN_LINEAR_THRESHOLD 0.01
-#define MIN_ROTATION_THRESHOLD 0.001
+#define MIN_LINEAR_THRESHOLD 0.001
+#define MIN_ROTATION_THRESHOLD 0.0001
 
 RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float elasticity) : PhysicsObject(shapeID)
 {
@@ -11,8 +11,8 @@ RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, 
 	m_rotation = rotation;
 	m_mass = mass;
 	m_elasticity = elasticity;
-	m_linearDrag = 0.2f;
-	m_angularDrag = 0.2f;
+	m_linearDrag = 0.1f;
+	m_angularDrag = 0.1f;
 	m_rotation = 0;
 	m_angularVelocity = 0;
 };
@@ -24,9 +24,11 @@ RigidBody::~RigidBody()
 
 void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
-	m_position += gravity * timeStep;
-	m_position += m_velocity * timeStep;
 	m_velocity -= m_velocity * m_linearDrag * timeStep;
+	m_position += m_velocity * timeStep;
+
+
+	m_position += gravity * timeStep;
 
 	m_rotation += m_angularVelocity * timeStep;
 	m_angularVelocity -= m_angularVelocity * m_angularDrag * timeStep;

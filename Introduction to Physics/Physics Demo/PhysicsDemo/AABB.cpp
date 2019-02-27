@@ -1,6 +1,6 @@
 #include "AABB.h"
 
-AABB::AABB(glm::vec2 position, glm::vec2 velocity, float rotation, float mass, glm::vec4 colour, float width, float height, float elasticity) : RigidBody(BOX, position, velocity, rotation, mass, elasticity)
+AABB::AABB(glm::vec2 position, glm::vec2 velocity, float rotation, float mass, glm::vec4 colour, float width, float height, float elasticity) : RigidBody(aaBBox, position, velocity, rotation, mass, elasticity)
 {
 	m_width = width;
 	m_height = height;

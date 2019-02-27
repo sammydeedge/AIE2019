@@ -20,6 +20,8 @@ public:
 	glm::vec4 getColour()		{ return m_colour; }
 	glm::vec2 getMinCorner()	{ return m_min_corner; }
 	glm::vec2 getMaxCorner()	{ return m_max_corner; }
+	float getWidth()			{ return m_width; }
+	float getHeight()			{ return m_height; }
 
 
 
