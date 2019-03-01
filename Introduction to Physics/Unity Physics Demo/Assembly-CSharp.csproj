@@ -61,8 +61,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Player.cs" />
     <Compile Include="Assets\Scripts\CannonBall.cs" />
     <Compile Include="Assets\Scripts\PhysicsObject.cs" />
+    <Compile Include="Assets\Scripts\Ragdoll.cs" />
+    <Compile Include="Assets\Scripts\RagdollTrigger.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/s182378/Documents/AIE Coding 2019/AIE2019/Introduction to Physics/Unity Physics Demo/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
