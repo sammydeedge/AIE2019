@@ -226,7 +226,27 @@ bool PhysicsScene::plane_aabb(PhysicsObject* obj1, PhysicsObject* obj2)
 	Plane* plane = dynamic_cast<Plane*>(obj1);
 	AABB* aabb = dynamic_cast<AABB*>(obj2);
 
-	//clamp value to corners
+	
+
+	if (plane != nullptr && aabb != nullptr)
+	{
+		aabb->updateCorners();
+
+		glm::vec2 collisionNormal = plane->getNormal();
+		glm::vec2 parallel = glm::vec2(collisionNormal.y, -collisionNormal.x);
+		glm::vec2 closest = glm::clamp(parallel, aabb->getMinCorner(), aabb->getMaxCorner());
+		float distToClosest = plane->distanceTo(closest);
+
+		if (distToClosest <= 0)
+		{
+			plane->randomColour();
+			aabb->randomColour();
+			aabb->setPosition(aabb->getPosition() + (plane->getNormal() * -(distToClosest)));
+			plane->resolveCollision(aabb, closest);
+		}
+		
+	}
+
 
 
 	return false;
@@ -250,8 +270,8 @@ bool PhysicsScene::sphere_plane(PhysicsObject* obj1, PhysicsObject* obj2)
 		float intersection = sphere->getRadius() - sphereToPlane;
 		if (intersection > 0)
 		{
-			/*sphere->randomColour();
-			plane->randomColour();*/
+			sphere->randomColour();
+			plane->randomColour();
 			glm::vec2 contactPos = sphere->getPosition() + (collisionNormal * -sphere->getRadius());
 			sphere->setPosition(sphere->getPosition() + (plane->getNormal() * intersection));
 			plane->resolveCollision(sphere, contactPos);
@@ -359,8 +379,32 @@ bool PhysicsScene::sphere_box(PhysicsObject* obj1, PhysicsObject* obj2)
 	return false;
 }
 
-bool PhysicsScene::sphere_aabb(PhysicsObject *, PhysicsObject *)
+bool PhysicsScene::sphere_aabb(PhysicsObject* obj1, PhysicsObject* obj2)
 {
+	Sphere* sphere = dynamic_cast<Sphere*>(obj1);
+	AABB* aabb = dynamic_cast<AABB*>(obj2);
+
+	if (sphere != nullptr || aabb != nullptr)
+	{
+		aabb->updateCorners();
+
+		glm::vec2 closest = glm::clamp(sphere->getPosition(), aabb->getMinCorner(), aabb->getMaxCorner());
+		glm::vec2 sphereToEdge = closest - sphere->getPosition();
+		glm::vec2 collisionVec = glm::normalize(sphereToEdge);
+
+		float distToClosest = glm::length(sphereToEdge);
+
+		if (distToClosest < sphere->getRadius())
+		{
+			sphere->randomColour();
+			aabb->randomColour();
+			sphere->setPosition(sphere->getPosition() + (collisionVec * -(distToClosest / 2.f)));
+			aabb->setPosition(aabb->getPosition() + (collisionVec * (distToClosest / 2.f)));
+			sphere->resolveCollision(aabb, closest);
+
+		}
+	}
+	
 	return false;
 }
 

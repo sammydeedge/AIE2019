@@ -11,8 +11,8 @@ RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, 
 	m_rotation = rotation;
 	m_mass = mass;
 	m_elasticity = elasticity;
-	m_linearDrag = 0.1f;
-	m_angularDrag = 0.1f;
+	m_linearDrag = 0.3f;
+	m_angularDrag = 0.3f;
 	m_rotation = 0;
 	m_angularVelocity = 0;
 };
@@ -24,13 +24,11 @@ RigidBody::~RigidBody()
 
 void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
+	m_velocity += gravity * timeStep;
+	m_position += m_velocity * timeStep; 
+
 	m_velocity -= m_velocity * m_linearDrag * timeStep;
-	m_position += m_velocity * timeStep;
-
-
-	m_position += gravity * timeStep;
-
-	m_rotation += m_angularVelocity * timeStep;
+	m_rotation += m_angularVelocity * timeStep;  
 	m_angularVelocity -= m_angularVelocity * m_angularDrag * timeStep;
 
 	if (length(m_velocity) < MIN_LINEAR_THRESHOLD)
